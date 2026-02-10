@@ -116,47 +116,47 @@ public class AxisGizmoVisual : MonoBehaviour
         labelObj.transform.localScale = Vector3.one * 0.5f;
     }
     
-    private void Update()
-    {
-        FaceCameraForLabels(_xAxisPositive);
-        FaceCameraForLabels(_xAxisNegative);
-        FaceCameraForLabels(_yAxisPositive);
-        FaceCameraForLabels(_yAxisNegative);
-        FaceCameraForLabels(_zAxisPositive);
-        FaceCameraForLabels(_zAxisNegative);
-    }
-    
-    private void FaceCameraForLabels(GameObject axisObject)
-    {
-        if (axisObject == null) return;
-        if (Camera.main == null) return;
-
-        Transform label = axisObject.transform.Find("Label");
-        if (label == null) return;
-
-        Camera cam = Camera.main;
-
-        // --- Billboard (ignore parent rotation) ---
-        Vector3 dir = label.position - cam.transform.position;
-        label.rotation = Quaternion.LookRotation(dir, cam.transform.up);
-
-        // --- Fade when aligned with view ---
-        Vector3 toLabel = dir.normalized;
-        float dot = Vector3.Dot(cam.transform.forward, toLabel);
-
-        float alpha = 1f;
-        if (dot > _fadeStartDot)
-        {
-            alpha = Mathf.InverseLerp(_fadeEndDot, _fadeStartDot, dot);
-        }
-
-        TextMesh textMesh = label.GetComponent<TextMesh>();
-        if (textMesh != null)
-        {
-            Color c = textMesh.color;
-            c.a = alpha;
-            textMesh.color = c;
-        }
-    }
+    // private void Update()
+    // {
+    //     FaceCameraForLabels(_xAxisPositive);
+    //     FaceCameraForLabels(_xAxisNegative);
+    //     FaceCameraForLabels(_yAxisPositive);
+    //     FaceCameraForLabels(_yAxisNegative);
+    //     FaceCameraForLabels(_zAxisPositive);
+    //     FaceCameraForLabels(_zAxisNegative);
+    // }
+    //
+    // private void FaceCameraForLabels(GameObject axisObject)
+    // {
+    //     if (axisObject == null) return;
+    //     if (Camera.main == null) return;
+    //
+    //     Transform label = axisObject.transform.Find("Label");
+    //     if (label == null) return;
+    //
+    //     Camera cam = Camera.main;
+    //
+    //     // --- Billboard (ignore parent rotation) ---
+    //     Vector3 dir = label.position - cam.transform.position;
+    //     label.rotation = Quaternion.LookRotation(dir, cam.transform.up);
+    //
+    //     // --- Fade when aligned with view ---
+    //     Vector3 toLabel = dir.normalized;
+    //     float dot = Vector3.Dot(cam.transform.forward, toLabel);
+    //
+    //     float alpha = 1f;
+    //     if (dot > _fadeStartDot)
+    //     {
+    //         alpha = Mathf.InverseLerp(_fadeEndDot, _fadeStartDot, dot);
+    //     }
+    //
+    //     TextMesh textMesh = label.GetComponent<TextMesh>();
+    //     if (textMesh != null)
+    //     {
+    //         Color c = textMesh.color;
+    //         c.a = alpha;
+    //         textMesh.color = c;
+    //     }
+    // }
 
 }

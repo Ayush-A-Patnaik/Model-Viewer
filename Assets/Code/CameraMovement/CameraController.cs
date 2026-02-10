@@ -115,10 +115,11 @@ public class CameraController : MonoBehaviour
         if (Mathf.Abs(scroll) < 0.01f)
             return;
 
-        Vector3 pos = _cam.transform.localPosition;
+        // Vector3 pos = _cam.transform.localPosition;
+        Vector3 pos = _pivot.transform.localPosition;
         pos.z += scroll * _zoomSpeed;
         pos.z = Mathf.Clamp(pos.z, _maxZoom, _minZoom);
-        _cam.transform.localPosition = pos;
+        _pivot.transform.localPosition = pos;
     }
 
     void OnMove(InputAction.CallbackContext ctx)
