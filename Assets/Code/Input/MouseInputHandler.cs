@@ -39,7 +39,6 @@ public static class MouseClickDispatcher
     public static void ProcessMouseClick()
     {
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             OnMouseClick?.Invoke(hit);
