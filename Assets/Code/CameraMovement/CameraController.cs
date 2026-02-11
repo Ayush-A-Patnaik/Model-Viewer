@@ -4,6 +4,13 @@ using UnityEngine.Serialization;
 
 public class CameraController : MonoBehaviour
 {
+    private ModelViewerInput _input;
+    private bool _orbiting, _panning;
+
+    private float _yaw, _pitch, _verticalMove;
+
+    private Vector2 _moveInput;
+    
     [Header("References")]
     [SerializeField] private Transform _cameraRig;
     [SerializeField] Transform _pivot;
@@ -25,17 +32,7 @@ public class CameraController : MonoBehaviour
     [Header("Fly")] 
     [SerializeField] float _flySpeed = 5f;
     [SerializeField] float _fastMultiplier = 3f;
-
-    private ModelViewerInput _input;
-
-    private bool _orbiting;
-    private bool _panning;
-
-    private float _yaw;
-    private float _pitch;
-    private float _verticalMove;
-
-    private Vector2 _moveInput; 
+    
 
     private void Awake()
     {
@@ -158,26 +155,19 @@ public class CameraController : MonoBehaviour
         _cameraRig.position += dir * speed * Time.deltaTime;
     }
 
-    /// <summary>
-    /// Set the camera rotation directly (used by axis gizmo snapping)
-    /// </summary>
+
     public void SetRotation(Quaternion rotation)
     {
         _pivot.rotation = rotation;
         
-        // Update internal yaw and pitch values to match
         Vector3 euler = rotation.eulerAngles;
         _yaw = euler.y;
         _pitch = euler.x;
         
-        // Normalize pitch to -180 to 180 range
         if (_pitch > 180f)
             _pitch -= 360f;
     }
-
-    /// <summary>
-    /// Get current camera rotation
-    /// </summary>
+    
     public Quaternion GetRotation()
     {
         return _pivot.rotation;
@@ -185,7 +175,6 @@ public class CameraController : MonoBehaviour
 
     public void SyncFromCamera()
     {
-        // Sync internal rotation values from current pivot rotation
         Vector3 euler = _pivot.localRotation.eulerAngles;
         _yaw = euler.y;
         _pitch = euler.x;

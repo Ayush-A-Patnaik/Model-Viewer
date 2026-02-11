@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [ExecuteAlways]
-public class AxisGizmoVisual : MonoBehaviour
+public class CreateAxisGizmoVisual : MonoBehaviour
 {
     [Header("Axis Settings")]
     [SerializeField] private float _axisLength = 1.5f;

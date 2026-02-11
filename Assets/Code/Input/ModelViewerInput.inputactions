@@ -234,6 +234,34 @@
                     "isPartOfComposite": true
                 }
             ]
+        },
+        {
+            "name": "BasicInput",
+            "id": "79c6511e-ad7b-49d8-b571-53b5b8122c6f",
+            "actions": [
+                {
+                    "name": "MouseLeft",
+                    "type": "Button",
+                    "id": "9b5d2b6a-7f38-48fb-a510-bc4a2cdad0b1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6b96bee3-bc05-4ae7-baea-749168b2df58",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
