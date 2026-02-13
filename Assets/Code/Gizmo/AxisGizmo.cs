@@ -1,19 +1,13 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class AxisGizmo : MonoBehaviour
 {
+    public static AxisGizmo Instance;
+    
     [Header("Camera References")]
     [SerializeField] private Camera _mainCamera;
-    [SerializeField] private Camera _gizmoCamera;
     [SerializeField] private Transform _gizmoPivot;
     [SerializeField] private CameraController _cameraController;
-    
-    //[Header("UI")]
-    //[SerializeField] private RectTransform _rectTransform;
-    //[SerializeField] private Canvas _canvas;
-    //[SerializeField] private RawImage _rawImage;
     
     
     [Header("Snap Settings")]
@@ -27,19 +21,16 @@ public class AxisGizmo : MonoBehaviour
     private float _snapProgress;
     private Quaternion _snapStartRotation;
     private Quaternion _snapTargetRotation;
-    
-    // private void SetupGizmoCamera()
-    // {
-    //     if (_gizmoCamera == null)
-    //     {
-    //         Debug.LogError("Gizmo Camera not assigned!");
-    //         return;
-    //     }
-    //     _gizmoCamera.depth = _mainCamera.depth + 1;
-    //     
-    //     _gizmoCamera.transform.position = _gizmoPivot.position + Vector3.back * 5f;
-    //     _gizmoCamera.transform.LookAt(_gizmoPivot);
-    // }
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     
     private void LateUpdate()
     {

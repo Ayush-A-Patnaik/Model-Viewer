@@ -55,7 +55,7 @@ public class GizmoClickDetector : MonoBehaviour
 
             if (axis != null)
             {
-                _axisGizmo.SnapToAxis(axis.AxisDirection);
+                //_axisGizmo.SnapToAxis(axis.AxisDirection);
             }
         }
     }
