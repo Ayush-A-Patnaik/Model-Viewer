@@ -158,7 +158,7 @@ public class CameraController : MonoBehaviour
 
     public void SetRotation(Quaternion rotation)
     {
-        _pivot.rotation = rotation;
+        _pivot.localRotation = rotation;
         
         Vector3 euler = rotation.eulerAngles;
         _yaw = euler.y;

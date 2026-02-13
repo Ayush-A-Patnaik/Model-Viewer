@@ -54,13 +54,15 @@ public class AxisGizmo : MonoBehaviour
         if (_snapProgress >= 1f)
         {
             _snapProgress = 1f;
-            _isSnapping = false;
         }
         
         float t = _snapCurve.Evaluate(_snapProgress);
         Quaternion currentRotation = Quaternion.Slerp(_snapStartRotation, _snapTargetRotation, t);
         
         _cameraController.SetRotation(currentRotation);
+        
+        _isSnapping = false;
+        
     }
     
     
@@ -78,7 +80,7 @@ public class AxisGizmo : MonoBehaviour
             case AxisDirection.NegativeZ: direction = Vector3.back; break;
         }
         
-        _snapStartRotation = _mainCamera.transform.rotation;
+        _snapStartRotation = _cameraController.GetRotation();
         _snapTargetRotation = Quaternion.LookRotation(-direction, Vector3.up);
         
         _snapProgress = 0f;
