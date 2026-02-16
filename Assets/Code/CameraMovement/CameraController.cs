@@ -1,3 +1,4 @@
+using AlligUtils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -32,6 +33,10 @@ public class CameraController : MonoBehaviour
     [Header("Fly")] 
     [SerializeField] float _flySpeed = 5f;
     [SerializeField] float _fastMultiplier = 3f;
+    
+    [Header("Focus Object")]
+    public GameObject FocusObject;
+    public float DistanceFromFocus;
     
 
     private void Awake()
@@ -112,11 +117,20 @@ public class CameraController : MonoBehaviour
         if (Mathf.Abs(scroll) < 0.01f)
             return;
 
-        // Vector3 pos = _cam.transform.localPosition;
+        "Zooming".Print();
+        
         Vector3 pos = _pivot.transform.localPosition;
         pos.z += scroll * _zoomSpeed;
         pos.z = Mathf.Clamp(pos.z, _maxZoom, _minZoom);
         _pivot.transform.localPosition = pos;
+        
+        #region FOV method
+        // float fov = _cam.fieldOfView;
+        //
+        // fov -= scroll * _zoomSpeed * Time.deltaTime;
+        //
+        // _cam.fieldOfView = Mathf.Clamp(fov, 15f, 100f);
+        #endregion
     }
 
     void OnMove(InputAction.CallbackContext ctx)
@@ -155,8 +169,20 @@ public class CameraController : MonoBehaviour
         _cameraRig.position += dir * speed * Time.deltaTime;
     }
 
+    public void SnapCameraView(Quaternion rotation)
+    {
+        //SetPosition();
+        SetRotation(rotation);
+    }
 
-    public void SetRotation(Quaternion rotation)
+    private void SetPosition()
+    {
+        if (FocusObject == null) return;
+        
+        _cameraRig.position = FocusObject.transform.position + new Vector3(0, 1.75f, -DistanceFromFocus);
+        
+    }
+    private void SetRotation(Quaternion rotation)
     {
         _pivot.localRotation = rotation;
         
@@ -170,16 +196,6 @@ public class CameraController : MonoBehaviour
     
     public Quaternion GetRotation()
     {
-        return _pivot.rotation;
-    }
-
-    public void SyncFromCamera()
-    {
-        Vector3 euler = _pivot.localRotation.eulerAngles;
-        _yaw = euler.y;
-        _pitch = euler.x;
-        
-        if (_pitch > 180f)
-            _pitch -= 360f;
+        return _pivot.localRotation;
     }
 }

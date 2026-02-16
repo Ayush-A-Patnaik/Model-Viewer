@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class AxisClickHandler : MonoBehaviour
 {
     [SerializeField] private AxisDirection _axisDirection;
-    
     private Button _axisButton;
 
     private void Awake()
@@ -13,9 +12,9 @@ public class AxisClickHandler : MonoBehaviour
         _axisButton = GetComponent<Button>();
         if(_axisButton == null)
             _axisButton = gameObject.AddComponent<Button>();
-        
-    }
 
+    }
+    
     public void Start()
     {
         _axisButton.onClick.AddListener(delegate
@@ -24,4 +23,6 @@ public class AxisClickHandler : MonoBehaviour
             AxisGizmo.Instance.SnapToAxis(_axisDirection);
         });
     }
+    
+
 }

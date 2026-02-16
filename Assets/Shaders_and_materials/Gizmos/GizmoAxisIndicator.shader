@@ -19,7 +19,7 @@ Shader "CustomShaders/GizmoAxisIndicator"
     {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" }
         Blend SrcAlpha OneMinusSrcAlpha
-        ZWrite Off
+        ZWrite off
         Cull Off
         Lighting Off
 
