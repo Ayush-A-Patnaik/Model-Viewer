@@ -117,12 +117,13 @@ public class CameraController : MonoBehaviour
         if (Mathf.Abs(scroll) < 0.01f)
             return;
 
-        "Zooming".Print();
+        // "Zooming".Print();
         
         Vector3 pos = _pivot.transform.localPosition;
         pos.z += scroll * _zoomSpeed;
         pos.z = Mathf.Clamp(pos.z, _maxZoom, _minZoom);
         _pivot.transform.localPosition = pos;
+
         
         #region FOV method
         // float fov = _cam.fieldOfView;
