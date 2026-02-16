@@ -110,7 +110,7 @@ public class CameraController : MonoBehaviour
 
         _cameraRig.position -= (right * delta.x + up * delta.y) * _panSpeed;
     }
-
+    
     private void OnZoom(InputAction.CallbackContext ctx)
     {
         float scroll = ctx.ReadValue<float>();
@@ -119,10 +119,11 @@ public class CameraController : MonoBehaviour
 
         // "Zooming".Print();
         
-        Vector3 pos = _pivot.transform.localPosition;
-        pos.z += scroll * _zoomSpeed;
-        pos.z = Mathf.Clamp(pos.z, _maxZoom, _minZoom);
-        _pivot.transform.localPosition = pos;
+        Vector3 forward = _cam.transform.forward;
+        
+        Vector3 newPos = _cameraRig.position + forward * scroll * _zoomSpeed;
+        //newPos.z = Mathf.Clamp(newPos.z, _minZoom, _maxZoom);
+        _cameraRig.position = newPos;
 
         
         #region FOV method
