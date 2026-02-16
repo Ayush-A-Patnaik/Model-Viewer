@@ -1,18 +1,19 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LookAtBehaviour : MonoBehaviour
 {
+    private GameObject _axisButton;
     public Transform SourceDirection;
     public Transform Target;
 
     [Range(-1f, 1f)]
     public float ViewThreshold = 0f;
     
-    private GameObject _axisButton;
     private void Awake()
     {
-        _axisButton = GetComponentInChildren<AxisClickHandler>().gameObject;
+        _axisButton = GetComponentInChildren<Button>().gameObject;
         UpdateLookAt();
     }
 

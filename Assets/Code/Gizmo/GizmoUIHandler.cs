@@ -1,25 +1,30 @@
+using AlligUtils;
+using AYellowpaper.SerializedCollections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GizmoUIHandler : MonoBehaviour
 {
-    [SerializeField] private RectTransform _rectTransform;
-    
-    [Header("Gizmo Settings")]
-    [SerializeField] private float _gizmoWidth = 400f;
-    [SerializeField] private float _gizmoHeight = 300f;
-    [SerializeField] private Vector2 _gizmoOffset = new Vector2(-30f, -30f);
+    [SerializeField]
+    private SerializedDictionary<Button, AxisDirection>  _axisButtons;
+
+    [SerializeField] private Button _ortho, _perpective;
     
     private void Awake()
     {
-        SetupGizmoRect();
+        AddListenerToButtons();
+    }
+
+    private void AddListenerToButtons()
+    {
+        foreach (var (axisButton, direction) in _axisButtons)
+        {
+            axisButton.onClick.AddListener(delegate
+            {
+                direction.Print("Snapping to axis: ");
+                AxisGizmo.Instance.SnapToAxis(direction);
+            });
+        }
     }
     
-    private void SetupGizmoRect()
-    {
-        _rectTransform.anchorMin = new Vector2(1, 1);
-        _rectTransform.anchorMax = new Vector2(1, 1);
-        _rectTransform.pivot = new Vector2(1, 1);
-        _rectTransform.anchoredPosition = _gizmoOffset;
-        _rectTransform.sizeDelta = new Vector2(_gizmoWidth, _gizmoHeight);
-    }
 }
