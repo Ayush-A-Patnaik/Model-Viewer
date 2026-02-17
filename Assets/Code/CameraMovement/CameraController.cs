@@ -38,14 +38,9 @@ public class CameraController : MonoBehaviour
     public GameObject FocusObject;
     public float DistanceFromFocus;
     
-
-    private void Awake()
-    {
-        _input = new ModelViewerInput();
-    }
-
     private void OnEnable()
     {
+        _input = InputHandler.Instance.Input;
         _input.Camera.Enable();
 
         _input.Camera.OrbitBtn.started += _ => _orbiting = true;
