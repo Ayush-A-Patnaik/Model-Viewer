@@ -6,7 +6,6 @@ public class AxisGizmo : MonoBehaviour
     public static AxisGizmo Instance;
 
     [Header("Camera References")]
-    //[SerializeField] private Camera _mainCamera;
     [SerializeField]
     private Transform _cameraPivot;
 
@@ -47,7 +46,8 @@ public class AxisGizmo : MonoBehaviour
         if (!_isSnapping)
         {
             // _gizmoPivot.rotation = Quaternion.Inverse(_mainCamera.transform.rotation);
-            _gizmoPivot.rotation = Quaternion.Inverse(_cameraPivot.localRotation);
+            // _gizmoPivot.rotation = Quaternion.Inverse(_cameraPivot.localRotation);
+            _gizmoPivot.rotation = Quaternion.Inverse(_cameraPivot.rotation);
         }
         else
         {
@@ -71,6 +71,7 @@ public class AxisGizmo : MonoBehaviour
         Quaternion currentRotation = Quaternion.Slerp(_snapStartRotation, _snapTargetRotation, t);
 
         _cameraController.SnapCameraView(currentRotation);
+        //_gizmoPivot.rotation = Quaternion.Inverse(_cameraController.GetRotation());
         OnGizmoRotate?.Invoke();
     }
 

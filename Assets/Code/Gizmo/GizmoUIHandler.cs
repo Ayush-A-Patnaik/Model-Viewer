@@ -1,5 +1,6 @@
 using AlligUtils;
 using AYellowpaper.SerializedCollections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,10 +9,13 @@ public class GizmoUIHandler : MonoBehaviour
     [SerializeField]
     private SerializedDictionary<Button, AxisDirection>  _axisButtons;
 
-    [SerializeField] private Button _ortho, _perpective;
+    [SerializeField] private Button _projectionBtn;
+    private TextMeshProUGUI _projectionBtnText;
+    private bool _isIso = false;
     
     private void Awake()
     {
+        _projectionBtnText =  _projectionBtn.GetComponentInChildren<TextMeshProUGUI>();
         AddListenerToButtons();
     }
 
@@ -25,6 +29,15 @@ public class GizmoUIHandler : MonoBehaviour
                 AxisGizmo.Instance.SnapToAxis(direction);
             });
         }
+
+        _projectionBtn.onClick.AddListener(delegate
+        {
+            _isIso = !_isIso;
+            // CameraController.Instance.MainCamera.orthographic = _isIso;
+            CameraController.Instance.SetProjection(_isIso);
+            _projectionBtnText.text = _isIso? "Iso" : "Persp";
+        });
+        
     }
     
 }

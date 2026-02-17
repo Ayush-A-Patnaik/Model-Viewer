@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 
 public class CameraController : MonoBehaviour
 {
+    public static CameraController Instance;
     private ModelViewerInput _input;
     private bool _orbiting, _panning;
 
@@ -14,29 +15,44 @@ public class CameraController : MonoBehaviour
     
     [Header("References")]
     [SerializeField] private Transform _cameraRig;
-    [SerializeField] Transform _pivot;
-    [SerializeField] Camera _cam;
+    [SerializeField] private Transform _pivot;
+    [SerializeField] private Camera _cam;
 
     [Header("Orbit")] 
-    [SerializeField] float _orbitSpeed = 0.2f;
-    [SerializeField] float _minPitch = -80f;
-    [SerializeField] float _maxPitch = 80f;
+    [SerializeField] private float _orbitSpeed = 0.2f;
+    [SerializeField] private float _minPitch = -80f;
+    [SerializeField] private float _maxPitch = 80f;
 
     [Header("Pan")] 
-    [SerializeField] float _panSpeed = 0.005f;
+    [SerializeField] private float _panSpeed = 0.005f;
 
     [Header("Zoom")] 
-    [SerializeField] float _zoomSpeed = 0.5f;
-    [SerializeField] float _minZoom = -0.5f;
-    [SerializeField] float _maxZoom = -50f;
+    [SerializeField] private float _zoomSpeed = 0.5f;
+    [SerializeField] private float _minZoom = -0.5f;
+    [SerializeField] private float _maxZoom = -50f;
 
     [Header("Fly")] 
-    [SerializeField] float _flySpeed = 5f;
-    [SerializeField] float _fastMultiplier = 3f;
+    [SerializeField] private float _flySpeed = 5f;
+    [SerializeField] private float _fastMultiplier = 3f;
     
-    [Header("Focus Object")]
-    public GameObject FocusObject;
-    public float DistanceFromFocus;
+    [SerializeField] private float _virtualDistance = 10f; 
+    // [Header("Focus Object")]
+    // public GameObject FocusObject;
+    // public float DistanceFromFocus;
+    
+    public Camera MainCamera => _cam;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     
     private void OnEnable()
     {
@@ -90,7 +106,8 @@ public class CameraController : MonoBehaviour
         _pitch -= delta.y * _orbitSpeed;
         _pitch = Mathf.Clamp(_pitch, _minPitch, _maxPitch);
 
-        _pivot.localRotation = Quaternion.Euler(_pitch, _yaw, 0f);
+        // _pivot.localRotation = Quaternion.Euler(_pitch, _yaw, 0f);
+        _pivot.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
     }
 
     private void OnPan(InputAction.CallbackContext ctx)
@@ -100,10 +117,11 @@ public class CameraController : MonoBehaviour
 
         Vector2 delta = ctx.ReadValue<Vector2>();
 
-        Vector3 right = _cam.transform.right;
-        Vector3 up = _cam.transform.up;
+        Vector3 right = MainCamera.transform.right;
+        Vector3 up = MainCamera.transform.up;
 
-        _cameraRig.position -= (right * delta.x + up * delta.y) * _panSpeed;
+        // _cameraRig.position -= (right * delta.x + up * delta.y) * _panSpeed;
+        _pivot.position -= (right * delta.x + up * delta.y) * _panSpeed;
     }
     
     private void OnZoom(InputAction.CallbackContext ctx)
@@ -111,24 +129,48 @@ public class CameraController : MonoBehaviour
         float scroll = ctx.ReadValue<float>();
         if (Mathf.Abs(scroll) < 0.01f)
             return;
-
-        // "Zooming".Print();
+        //_virtualDistance = Mathf.Clamp(_virtualDistance, _minZoom, _maxZoom);
         
-        Vector3 forward = _cam.transform.forward;
+        if (MainCamera.orthographic)
+            ZoomOrthographic();
+        else
+            ZoomPerspective(scroll);
         
-        Vector3 newPos = _cameraRig.position + forward * scroll * _zoomSpeed;
-        //newPos.z = Mathf.Clamp(newPos.z, _minZoom, _maxZoom);
-        _cameraRig.position = newPos;
-
+        _virtualDistance -= scroll * _zoomSpeed;
         
-        #region FOV method
-        // float fov = _cam.fieldOfView;
-        //
-        // fov -= scroll * _zoomSpeed * Time.deltaTime;
-        //
-        // _cam.fieldOfView = Mathf.Clamp(fov, 15f, 100f);
-        #endregion
     }
+    private void ZoomPerspective(float scroll)
+    {
+        Vector3 forward = MainCamera.transform.forward;
+        
+        // Vector3 newPos = _cameraRig.position + forward * scroll * _zoomSpeed;
+        Vector3 newPos = _pivot.position + forward * scroll * _zoomSpeed;
+        //newPos.z = Mathf.Clamp(newPos.z, _minZoom, _maxZoom);
+        _pivot.position = newPos;
+    }
+    
+    private void ZoomOrthographic()
+    {
+        float fovRad = MainCamera.fieldOfView * Mathf.Deg2Rad;
+        MainCamera.orthographicSize = _virtualDistance * Mathf.Tan(fovRad / 2f);
+    }
+    
+    public void SetProjection(bool isOrthographic)
+    {
+        float fovRad = MainCamera.fieldOfView * Mathf.Deg2Rad;
+
+        if (isOrthographic)
+        {
+            MainCamera.orthographicSize = _virtualDistance * Mathf.Tan(fovRad / 2f);
+            MainCamera.orthographic = true;
+        }
+        else
+        {
+            _virtualDistance = MainCamera.orthographicSize / Mathf.Tan(fovRad / 2f);
+            MainCamera.orthographic = false;
+        }
+    }
+    
 
     void OnMove(InputAction.CallbackContext ctx)
     {
@@ -141,10 +183,10 @@ public class CameraController : MonoBehaviour
             speed *= _fastMultiplier;
 
         Vector3 dir =
-            _cam.transform.forward * move.y +
-            _cam.transform.right * move.x;
+            MainCamera.transform.forward * move.y +
+            MainCamera.transform.right * move.x;
 
-        _cameraRig.position += dir * speed * Time.deltaTime;
+        _pivot.position += dir * speed * Time.deltaTime;
     }
     
     private void ApplyMovement()
@@ -159,11 +201,11 @@ public class CameraController : MonoBehaviour
             speed *= _fastMultiplier;
 
         Vector3 dir =
-            _cam.transform.forward * _moveInput.y +
-            _cam.transform.right * _moveInput.x + 
-            _cam.transform.up * _verticalMove;
+            MainCamera.transform.forward * _moveInput.y +
+            MainCamera.transform.right * _moveInput.x + 
+            MainCamera.transform.up * _verticalMove;
 
-        _cameraRig.position += dir * speed * Time.deltaTime;
+        _pivot.position += dir * speed * Time.deltaTime;
     }
 
     public void SnapCameraView(Quaternion rotation)
@@ -172,16 +214,18 @@ public class CameraController : MonoBehaviour
         SetRotation(rotation);
     }
 
-    private void SetPosition()
-    {
-        if (FocusObject == null) return;
-        
-        _cameraRig.position = FocusObject.transform.position + new Vector3(0, 1.75f, -DistanceFromFocus);
-        
-    }
+    // private void SetPosition()
+    // {
+    //     if (FocusObject == null) return;
+    //     
+    //     _cameraRig.position = FocusObject.transform.position + new Vector3(0, 1.75f, -DistanceFromFocus);
+    //     
+    // }
     private void SetRotation(Quaternion rotation)
     {
-        _pivot.localRotation = rotation;
+        // _pivot.localRotation = rotation;
+        _cameraRig.rotation = rotation;
+        _pivot.localRotation = Quaternion.identity;
         
         Vector3 euler = rotation.eulerAngles;
         _yaw = euler.y;
@@ -193,6 +237,7 @@ public class CameraController : MonoBehaviour
     
     public Quaternion GetRotation()
     {
-        return _pivot.localRotation;
+        // return _pivot.localRotation;
+        return _cameraRig.rotation;
     }
 }
