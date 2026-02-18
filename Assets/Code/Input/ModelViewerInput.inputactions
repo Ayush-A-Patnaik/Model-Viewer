@@ -76,6 +76,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Focus",
+                    "type": "Button",
+                    "id": "b9bba864-1684-410c-8b28-6f72d93c7d7a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -232,6 +241,17 @@
                     "action": "Vertical",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "4ff10953-f992-4793-b81d-a5b48edebe58",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Focus",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -247,6 +267,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "MultiSelectBtn",
+                    "type": "Button",
+                    "id": "11f56bc5-df90-4ab0-be3d-1f2ffb4c179d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -258,6 +287,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "MouseLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c12c41cf-816e-4391-9156-8b4dbf90a548",
+                    "path": "<Keyboard>/leftCtrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MultiSelectBtn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

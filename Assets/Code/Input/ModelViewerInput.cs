@@ -162,6 +162,15 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Focus"",
+                    ""type"": ""Button"",
+                    ""id"": ""b9bba864-1684-410c-8b28-6f72d93c7d7a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -318,6 +327,17 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Vertical"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4ff10953-f992-4793-b81d-a5b48edebe58"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Focus"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -333,6 +353,15 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MultiSelectBtn"",
+                    ""type"": ""Button"",
+                    ""id"": ""11f56bc5-df90-4ab0-be3d-1f2ffb4c179d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -344,6 +373,17 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""MouseLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c12c41cf-816e-4391-9156-8b4dbf90a548"",
+                    ""path"": ""<Keyboard>/leftCtrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MultiSelectBtn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -362,9 +402,11 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
         m_Camera_Move = m_Camera.FindAction("Move", throwIfNotFound: true);
         m_Camera_FastMove = m_Camera.FindAction("FastMove", throwIfNotFound: true);
         m_Camera_Vertical = m_Camera.FindAction("Vertical", throwIfNotFound: true);
+        m_Camera_Focus = m_Camera.FindAction("Focus", throwIfNotFound: true);
         // BasicInput
         m_BasicInput = asset.FindActionMap("BasicInput", throwIfNotFound: true);
         m_BasicInput_MouseLeft = m_BasicInput.FindAction("MouseLeft", throwIfNotFound: true);
+        m_BasicInput_MultiSelectBtn = m_BasicInput.FindAction("MultiSelectBtn", throwIfNotFound: true);
     }
 
     ~@ModelViewerInput()
@@ -454,6 +496,7 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Camera_Move;
     private readonly InputAction m_Camera_FastMove;
     private readonly InputAction m_Camera_Vertical;
+    private readonly InputAction m_Camera_Focus;
     /// <summary>
     /// Provides access to input actions defined in input action map "Camera".
     /// </summary>
@@ -497,6 +540,10 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Camera/Vertical".
         /// </summary>
         public InputAction @Vertical => m_Wrapper.m_Camera_Vertical;
+        /// <summary>
+        /// Provides access to the underlying input action "Camera/Focus".
+        /// </summary>
+        public InputAction @Focus => m_Wrapper.m_Camera_Focus;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -547,6 +594,9 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
             @Vertical.started += instance.OnVertical;
             @Vertical.performed += instance.OnVertical;
             @Vertical.canceled += instance.OnVertical;
+            @Focus.started += instance.OnFocus;
+            @Focus.performed += instance.OnFocus;
+            @Focus.canceled += instance.OnFocus;
         }
 
         /// <summary>
@@ -582,6 +632,9 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
             @Vertical.started -= instance.OnVertical;
             @Vertical.performed -= instance.OnVertical;
             @Vertical.canceled -= instance.OnVertical;
+            @Focus.started -= instance.OnFocus;
+            @Focus.performed -= instance.OnFocus;
+            @Focus.canceled -= instance.OnFocus;
         }
 
         /// <summary>
@@ -620,6 +673,7 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_BasicInput;
     private List<IBasicInputActions> m_BasicInputActionsCallbackInterfaces = new List<IBasicInputActions>();
     private readonly InputAction m_BasicInput_MouseLeft;
+    private readonly InputAction m_BasicInput_MultiSelectBtn;
     /// <summary>
     /// Provides access to input actions defined in input action map "BasicInput".
     /// </summary>
@@ -635,6 +689,10 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "BasicInput/MouseLeft".
         /// </summary>
         public InputAction @MouseLeft => m_Wrapper.m_BasicInput_MouseLeft;
+        /// <summary>
+        /// Provides access to the underlying input action "BasicInput/MultiSelectBtn".
+        /// </summary>
+        public InputAction @MultiSelectBtn => m_Wrapper.m_BasicInput_MultiSelectBtn;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -664,6 +722,9 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
             @MouseLeft.started += instance.OnMouseLeft;
             @MouseLeft.performed += instance.OnMouseLeft;
             @MouseLeft.canceled += instance.OnMouseLeft;
+            @MultiSelectBtn.started += instance.OnMultiSelectBtn;
+            @MultiSelectBtn.performed += instance.OnMultiSelectBtn;
+            @MultiSelectBtn.canceled += instance.OnMultiSelectBtn;
         }
 
         /// <summary>
@@ -678,6 +739,9 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
             @MouseLeft.started -= instance.OnMouseLeft;
             @MouseLeft.performed -= instance.OnMouseLeft;
             @MouseLeft.canceled -= instance.OnMouseLeft;
+            @MultiSelectBtn.started -= instance.OnMultiSelectBtn;
+            @MultiSelectBtn.performed -= instance.OnMultiSelectBtn;
+            @MultiSelectBtn.canceled -= instance.OnMultiSelectBtn;
         }
 
         /// <summary>
@@ -774,6 +838,13 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnVertical(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Focus" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFocus(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BasicInput" which allows adding and removing callbacks.
@@ -789,5 +860,12 @@ public partial class @ModelViewerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMouseLeft(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MultiSelectBtn" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMultiSelectBtn(InputAction.CallbackContext context);
     }
 }

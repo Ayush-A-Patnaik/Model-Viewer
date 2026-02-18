@@ -76,6 +76,8 @@ public class CameraController : MonoBehaviour
         _input.Camera.Vertical.performed += ctx => _verticalMove = ctx.ReadValue<float>();
         _input.Camera.Vertical.canceled += _ => _verticalMove = 0f;
         
+        _input.Camera.Focus.performed += FocusOnSelectedObject;
+        
         InputSystem.onAfterUpdate += ApplyMovement;
     }
 
@@ -224,8 +226,8 @@ public class CameraController : MonoBehaviour
     private void SetRotation(Quaternion rotation)
     {
         // _pivot.localRotation = rotation;
-        _cameraRig.rotation = rotation;
         _pivot.localRotation = Quaternion.identity;
+        _cameraRig.rotation = rotation;
         
         Vector3 euler = rotation.eulerAngles;
         _yaw = euler.y;
@@ -233,6 +235,12 @@ public class CameraController : MonoBehaviour
         
         if (_pitch > 180f)
             _pitch -= 360f;
+    }
+    
+    private void FocusOnSelectedObject(InputAction.CallbackContext obj)
+    {
+        "Focusing".Print();
+        //throw new System.NotImplementedException();
     }
     
     public Quaternion GetRotation()
