@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "ModelViewerInput",
     "maps": [
         {
@@ -266,7 +267,7 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "MultiSelectBtn",
