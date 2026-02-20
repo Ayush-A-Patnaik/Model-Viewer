@@ -40,7 +40,6 @@ public class SelectionHandler : MonoBehaviour
 
         
     }
-
     private void OnEnable()
     {
         MouseClickDispatcher.OnObjectClick += OnObjectSelect;
@@ -95,6 +94,11 @@ public class SelectionHandler : MonoBehaviour
 
             if (screenRect.Contains(new Vector2(screenPos.x, screenPos.y)))
                 hits.Add(col.gameObject);
+            else
+            {
+                if(hits.Contains(col.gameObject))
+                    hits.Remove(col.gameObject);
+            }
         }
 
         MeshSelection.AddObjects(hits, IsMultiSelect);

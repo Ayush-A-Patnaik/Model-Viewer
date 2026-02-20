@@ -110,7 +110,6 @@ public static class MouseClickDispatcher
     public static Action DragCanceled;
     
     private static LayerMask _pickableMask =  1 << LayerMask.NameToLayer("Pickable");
-    private static LayerMask _selectionMask = 1 << LayerMask.NameToLayer("SelectionMask");
     public static void ProcessMouseClick()
     {
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
