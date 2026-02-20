@@ -6,13 +6,13 @@ using UnityEngine.InputSystem;
 
 public class InputHandler : MonoBehaviour
 {
-    private const float DragThreshold = 100f; 
+    private const float DragThreshold = 10f; 
     
     public static InputHandler Instance;
     
     private ModelViewerInput _input;
     private Vector2 _mouseDownPosition;
-    private bool _isDragging = false;
+    private bool _isDragging = false, _isMouseHeld = false;
 
     public ModelViewerInput Input
     {
@@ -36,9 +36,9 @@ public class InputHandler : MonoBehaviour
     {
         _input.BasicInput.Enable();
 
-        //_input.BasicInput.MouseLeft.started  += OnLeftMouseStarted;
+        _input.BasicInput.MouseLeft.started  += OnLeftMouseStarted;
         _input.BasicInput.MouseLeft.performed += OnLeftMousePerformed;
-        //_input.BasicInput.MouseLeft.canceled  += OnLeftMouseCanceled;
+        _input.BasicInput.MouseLeft.canceled  += OnMouseCanceled;
         
         _input.BasicInput.MultiSelectBtn.performed += ctx =>
         {
@@ -48,42 +48,55 @@ public class InputHandler : MonoBehaviour
         {
             SelectionHandler.Instance.IsMultiSelect = _input.BasicInput.MultiSelectBtn.IsPressed();
         };
+
+        InputSystem.onAfterUpdate += CheckDrag;
     }
 
     private void OnDisable()
     {
+        _input.BasicInput.MouseLeft.started  -= OnLeftMouseStarted;
         _input.BasicInput.MouseLeft.performed -=  OnLeftMousePerformed;
+        _input.BasicInput.MouseLeft.canceled  -= OnMouseCanceled;
         _input.BasicInput.Disable();
-
+        InputSystem.onAfterUpdate -= CheckDrag;
     }
 
     private void OnLeftMouseStarted(InputAction.CallbackContext ctx)
     {
         _mouseDownPosition = Mouse.current.position.ReadValue();
+        _isMouseHeld = true;
         _isDragging = false;
     }
     private void OnLeftMousePerformed(InputAction.CallbackContext ctx)
     {
         MouseClickDispatcher.ProcessMouseClick();
     }
-    
-    private void OnLeftMouseCanceled(InputAction.CallbackContext ctx)
+
+    private void OnMouseCanceled(InputAction.CallbackContext ctx)
     {
+        _isMouseHeld  = false;
+        if (_isDragging)
+            MouseClickDispatcher.DragCanceled?.Invoke();
+    }
+    private void CheckDrag()
+    {
+        if (!_isMouseHeld) return;
+        
+        Vector2 current =  Mouse.current.position.ReadValue();
+
+        if (!_isDragging)
+        {
+            if (Vector2.Distance(current, _mouseDownPosition) > DragThreshold)
+            {
+                _isDragging = true;
+                MouseClickDispatcher.DragStarted?.Invoke();
+            }
+        }
+        
         if (_isDragging)
         {
-            MouseClickDispatcher.ProcessDragSelect(
-                _mouseDownPosition,
-                Mouse.current.position.ReadValue(),
-                SelectionHandler.Instance.IsMultiSelect
-            );
+            MouseClickDispatcher.DragUpdated?.Invoke(_mouseDownPosition, current);
         }
-        else
-        {
-            MouseClickDispatcher.ProcessMouseClick();
-        }
-
-        _isDragging = false;
-        MouseClickDispatcher.DragCanceled?.Invoke();
     }
 }
 
@@ -92,7 +105,7 @@ public static class MouseClickDispatcher
     public static Action<GameObject> OnObjectClick;
     public static Action OnEmptyClicked;
     
-    public static Action<Vector2> DragStarted;                  
+    public static Action DragStarted;                  
     public static Action<Vector2, Vector2> DragUpdated;         
     public static Action DragCanceled;
     
@@ -112,32 +125,6 @@ public static class MouseClickDispatcher
             OnEmptyClicked?.Invoke();
         }
     }
-    
-    public static void ProcessDragSelect(Vector2 startScreen, Vector2 endScreen, bool isMultiSelect)
-    {
-        Rect screenRect = new Rect(
-            Mathf.Min(startScreen.x, endScreen.x),
-            Mathf.Min(startScreen.y, endScreen.y),
-            Mathf.Abs(startScreen.x - endScreen.x),
-            Mathf.Abs(startScreen.y - endScreen.y)
-        );
-        
-        var pickables = GameObject.FindObjectsByType<Collider>(FindObjectsSortMode.None);
-        var hits = new List<GameObject>();
 
-        foreach (var col in pickables)
-        {
-            if (((_pickableMask.value) & (1 << col.gameObject.layer)) == 0) continue;
-
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(col.bounds.center);
-            
-            if (screenPos.z < 0) continue;
-
-            if (screenRect.Contains(new Vector2(screenPos.x, screenPos.y)))
-                hits.Add(col.gameObject);
-        }
-
-        MeshSelection.AddObjects(hits, isMultiSelect);
-    }
 }
 

@@ -7,15 +7,15 @@ public class SelectionHandler : MonoBehaviour
 {
     public static SelectionHandler Instance;
     [SerializeField] private GameObject _currentSelectedObject = null;
-
-    // private LayerMask _originalLayer;
-    // private LayerMask _selectionLayer;
+    
     public bool IsMultiSelect = false;
+
+    private Vector2 _dragStart, _dragEnd;
     
     // private readonly HashSet<Renderer> _selectedRenderers = new HashSet<Renderer>();
     // public HashSet<Renderer> SelectedRenderers => _selectedRenderers;
 
-    private HashSet<GameObject> _selectedObjects = new();
+    //private HashSet<GameObject> _selectedObjects = new();
 
     public GameObject CurrentSelectedObject
     {
@@ -26,17 +26,8 @@ public class SelectionHandler : MonoBehaviour
             //need to set some outline callback + desection logic
         }
     }
-
-    public HashSet<GameObject> SelectedObjects
-    {
-        get => _selectedObjects;
-        set { _selectedObjects = value; }
-    }
-
     private void Awake()
     {
-        // _originalLayer = LayerMask.NameToLayer("Pickable");
-        // _selectionLayer = LayerMask.NameToLayer("SelectionMask");
 
         if (Instance == null)
         {
@@ -47,8 +38,21 @@ public class SelectionHandler : MonoBehaviour
             Destroy(gameObject);
         }
 
+        
+    }
+
+    private void OnEnable()
+    {
         MouseClickDispatcher.OnObjectClick += OnObjectSelect;
         MouseClickDispatcher.OnEmptyClicked += DeselectAll;
+        MouseClickDispatcher.DragUpdated  += OnDragUpdated;
+    }
+
+    private void OnDisable()
+    {
+        MouseClickDispatcher.OnObjectClick -= OnObjectSelect;
+        MouseClickDispatcher.OnEmptyClicked -= DeselectAll;
+        MouseClickDispatcher.DragUpdated  -= OnDragUpdated;
     }
 
     private void OnObjectSelect(GameObject go)
@@ -58,14 +62,44 @@ public class SelectionHandler : MonoBehaviour
     
     private void DeselectAll()
     {
+        if(IsMultiSelect) return;
         MeshSelection.ClearAllObjects();
     }
 
-    [ContextMenu("Show Current selections")]
-    public void ShowSelections()
+    private void OnDragUpdated(Vector2 start, Vector2 end)
     {
-        _selectedObjects.Print("Selected Object in list: ", Palette.YellowSunflower);
+        _dragStart = start;
+        _dragEnd = end;
+        SelectMeshesOnDrag(_dragStart, _dragEnd);
     }
+    
+    private void SelectMeshesOnDrag(Vector2 startScreen, Vector2 endScreen)
+    {
+        Rect screenRect = new Rect(
+            Mathf.Min(startScreen.x, endScreen.x),
+            Mathf.Min(startScreen.y, endScreen.y),
+            Mathf.Abs(startScreen.x - endScreen.x),
+            Mathf.Abs(startScreen.y - endScreen.y)
+        );
+        
+        var pickables = GameObject.FindObjectsByType<Collider>(FindObjectsSortMode.None);
+        var hits = new List<GameObject>();
+
+        foreach (var col in pickables)
+        {
+            if ((1 << LayerMask.NameToLayer("Pickable") & (1 << col.gameObject.layer)) == 0) continue;
+
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(col.bounds.center);
+            
+            if (screenPos.z < 0) continue;
+
+            if (screenRect.Contains(new Vector2(screenPos.x, screenPos.y)))
+                hits.Add(col.gameObject);
+        }
+
+        MeshSelection.AddObjects(hits, IsMultiSelect);
+    }
+    
 }
 
 public static class MeshSelection
