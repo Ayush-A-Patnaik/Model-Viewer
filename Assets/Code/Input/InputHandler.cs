@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using AlligUtils;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class InputHandler : MonoBehaviour
@@ -112,6 +113,11 @@ public static class MouseClickDispatcher
     private static LayerMask _pickableMask =  1 << LayerMask.NameToLayer("Pickable");
     public static void ProcessMouseClick()
     {
+        if (EventSystem.current != null &&
+            EventSystem.current.IsPointerOverGameObject())
+            return;
+        
+        
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         bool didHit = Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _pickableMask);
         
